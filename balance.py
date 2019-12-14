@@ -60,8 +60,12 @@ class Equation():
                     if T[i]!=0:
                         if list(set([I[i]==0 for I in mat[:-1]]))[0]:
                             return True
+            cnt = 0     # 强行修bug，强行跳出死循环
             while significant(mat[-1]):
-                mat = mat[1:]+mat[:1]
+                mat = mat[1:] + mat[:1]
+                cnt += 1
+                if cnt>20:
+                    break
             mat = mat[:len(self.substances)-1]
         self.vector = np.array(mat,dtype=np.float32)[:,-1]
         mat2 = np.array(mat)[:,:-1]

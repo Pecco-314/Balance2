@@ -97,7 +97,7 @@ class LatexEdit(QLineEdit):
         super().__init__()
         self.setParent(parent)
         self.initCanvas(parent)
-        self.textEdited.connect(self.setLatex)
+        self.textChanged.connect(self.setLatex)
         self.setGeometry(0, 0, 0, 0)  # 隐藏输入框
         self.setFocus()
         self.setLatex(r"$\;$")  # 这里是为了防止之后显示Latex文本时卡顿
