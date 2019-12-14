@@ -40,10 +40,10 @@ class Substance(Element):
         return self
 class Equation():
     def __init__(self,string):
-        self.reactantsAmount = re.findall('[+=](?=[\w ])',string).index('=')+1
+        self.reactantsAmount = re.findall(r'[+=](?=[(\w ])',string).index('=')+1
         #得到反应物的数量
         #原理是，寻找（后面紧跟字母、数字或空格的）加号和等号（排除电荷符号），然后看等号的索引。
-        self.substancesStringList = [i for i in re.findall('(?:[A-Za-z]\w*)?(?:\([A-Z]\w*\)\d*)?(?:[A-Za-z]\w*)?(?:\[\d*[\+-]?\])?',string) if i!=""]
+        self.substancesStringList = [i for i in re.findall(r'(?:[A-Za-z]\w*)?(?:\([A-Z]\w*\)\d*)?(?:[A-Za-z]\w*)?(?:\[\d*[\+-]?\])?',string) if i!=""]
         #得到所有反应物的字符串所组成的列表
         #寻找的是，字母与数字组合+字母、数字与小括号组合+字母与数字组合+字母、数字、中括号与正负号组合，其中每一项都是可选的
         self.substances = [Substance(i) for i in self.substancesStringList]
@@ -74,8 +74,8 @@ class Equation():
         return [i.count(ele) for i in self.substances]
 
 def removeBrackets(string):
-    unit = [i for i in re.findall("[A-Za-z\-\d]*",string) if i!=""][0]
-    amountList = re.findall("(?<=\))\d*",string)
+    unit = [i for i in re.findall(r"[A-Za-z\-\d]*",string) if i!=""][0]
+    amountList = re.findall(r"(?<=\))\d*",string)
     if not amountList:
         return Substance(unit)
     else:
@@ -92,8 +92,8 @@ def solve(a,b):
     sn = [int(i*lcm([i.denominator for i in I2])) for i in I2]
     return sn        
 def formatSubstance(string):
-    if re.findall("\[\d*[+-]\]",string):
-        I = re.findall("\[\d*[+-]\]",string)[0]
+    if re.findall(r"\[\d*[+-]\]",string):
+        I = re.findall(r"\[\d*[+-]\]",string)[0]
         if I[1] == "+":
             c = 1
         elif I[1] == "-":
@@ -101,8 +101,8 @@ def formatSubstance(string):
         else:
             c = int(I[-2]+I[-3:0:-1])
         string = string.replace(I,"E"+str(c))
-    if re.findall("\(", string):
-        L = re.findall("\(*[A-Za-z\-\d]*\)*[\-\d]*", string)
+    if re.findall(r"\(", string):
+        L = re.findall(r"\(*[A-Za-z\-\d]*\)*[\-\d]*", string)
         L = [removeBrackets(i) for i in L if i!=""]
         for i in L:i.expanse()
         string = "".join([str(i) for i in L])
