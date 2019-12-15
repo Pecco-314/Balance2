@@ -1,8 +1,13 @@
+#coding=gbk
+'''
+»¯Ñ§·½³ÌÊ½ÅäÆ½Æ÷
+@author: Pecco
+'''
+
 import functools as ft
 import fractions as fr
 import numpy as np
 import re
-import random
 
 class Element():
     def __init__(self,string):
@@ -40,19 +45,19 @@ class Substance(Element):
         return self
 class Equation():
     def __init__(self,string):
-        self.reactantsAmount = re.findall(r'[+=](?=[(\w ])',string).index('=')+1
-        #å¾—åˆ°ååº”ç‰©çš„æ•°é‡
-        #åŸç†æ˜¯ï¼Œå¯»æ‰¾ï¼ˆåé¢ç´§è·Ÿå­—æ¯ã€æ•°å­—æˆ–ç©ºæ ¼çš„ï¼‰åŠ å·å’Œç­‰å·ï¼ˆæ’é™¤ç”µè·ç¬¦å·ï¼‰ï¼Œç„¶åçœ‹ç­‰å·çš„ç´¢å¼•ã€‚
-        self.substancesStringList = [i for i in re.findall(r'(?:[A-Za-z]\w*)?(?:\([A-Z]\w*\)\d*)?(?:[A-Za-z]\w*)?(?:\[\d*[\+-]?\])?',string) if i!=""]
-        #å¾—åˆ°æ‰€æœ‰ååº”ç‰©çš„å­—ç¬¦ä¸²æ‰€ç»„æˆçš„åˆ—è¡¨
-        #å¯»æ‰¾çš„æ˜¯ï¼Œå­—æ¯ä¸æ•°å­—ç»„åˆ+å­—æ¯ã€æ•°å­—ä¸å°æ‹¬å·ç»„åˆ+å­—æ¯ä¸æ•°å­—ç»„åˆ+å­—æ¯ã€æ•°å­—ã€ä¸­æ‹¬å·ä¸æ­£è´Ÿå·ç»„åˆï¼Œå…¶ä¸­æ¯ä¸€é¡¹éƒ½æ˜¯å¯é€‰çš„
+        self.reactantsAmount = re.findall('[+=](?=[\w ])',string).index('=')+1
+        #µÃµ½·´Ó¦ÎïµÄÊıÁ¿
+        #Ô­ÀíÊÇ£¬Ñ°ÕÒ£¨ºóÃæ½ô¸ú×ÖÄ¸¡¢Êı×Ö»ò¿Õ¸ñµÄ£©¼ÓºÅºÍµÈºÅ£¨ÅÅ³ıµçºÉ·ûºÅ£©£¬È»ºó¿´µÈºÅµÄË÷Òı¡£
+        self.substancesStringList = [i for i in re.findall('(?:[A-Za-z]\w*)?(?:\([A-Z]\w*\)\d*)?(?:[A-Za-z]\w*)?(?:\[\d*[\+-]?\])?',string) if i!=""]
+        #µÃµ½ËùÓĞ·´Ó¦ÎïµÄ×Ö·û´®Ëù×é³ÉµÄÁĞ±í
+        #Ñ°ÕÒµÄÊÇ£¬×ÖÄ¸ÓëÊı×Ö×éºÏ+×ÖÄ¸¡¢Êı×ÖÓëĞ¡À¨ºÅ×éºÏ+×ÖÄ¸ÓëÊı×Ö×éºÏ+×ÖÄ¸¡¢Êı×Ö¡¢ÖĞÀ¨ºÅÓëÕı¸ººÅ×éºÏ£¬ÆäÖĞÃ¿Ò»Ïî¶¼ÊÇ¿ÉÑ¡µÄ
         self.substances = [Substance(i) for i in self.substancesStringList]
-        #ç”¨é‚£äº›ååº”ç‰©çš„å­—ç¬¦ä¸²åˆ›å»ºä¸€ç³»åˆ—Substanceç±»çš„å®ä¾‹
+        #ÓÃÄÇĞ©·´Ó¦ÎïµÄ×Ö·û´®´´½¨Ò»ÏµÁĞSubstanceÀàµÄÊµÀı
         self.eles = []
         for i in self.substances:
             self.eles += i.eles
         self.eles = list(set(self.eles))
-        #å°†è¿™äº›Substanceçš„elesæ±‡æ€»
+        #½«ÕâĞ©SubstanceµÄeles»ã×Ü
         mat = list(set([tuple(self.countAll(ele)) for ele in self.eles]))
         if len(self.eles)>len(self.substances)-1:
             def significant(T):
@@ -60,12 +65,8 @@ class Equation():
                     if T[i]!=0:
                         if list(set([I[i]==0 for I in mat[:-1]]))[0]:
                             return True
-            cnt = 0     # å¼ºè¡Œä¿®bugï¼Œå¼ºè¡Œè·³å‡ºæ­»å¾ªç¯
             while significant(mat[-1]):
-                mat = mat[1:] + mat[:1]
-                cnt += 1
-                if cnt>20:
-                    break
+                mat = mat[1:]+mat[:1]
             mat = mat[:len(self.substances)-1]
         self.vector = np.array(mat,dtype=np.float32)[:,-1]
         mat2 = np.array(mat)[:,:-1]
@@ -78,8 +79,8 @@ class Equation():
         return [i.count(ele) for i in self.substances]
 
 def removeBrackets(string):
-    unit = [i for i in re.findall(r"[A-Za-z\-\d]*",string) if i!=""][0]
-    amountList = re.findall(r"(?<=\))\d*",string)
+    unit = [i for i in re.findall("[A-Za-z\-\d]*",string) if i!=""][0]
+    amountList = re.findall("(?<=\))\d*",string)
     if not amountList:
         return Substance(unit)
     else:
@@ -90,14 +91,14 @@ def removeBrackets(string):
 def solve(a,b):
     def lcm(l):
         return ft.reduce(lambda x,y:x*y/fr.gcd(x,y),l)
-    I = np.linalg.inv(a)    #açš„é€†
-    d = int(np.linalg.det(a))    #açš„è¡Œåˆ—å¼
+    I = np.linalg.inv(a)    #aµÄÄæ
+    d = int(np.linalg.det(a))    #aµÄĞĞÁĞÊ½
     I2 = [fr.Fraction(int(i),d) for i in list(np.dot(I,b)*d)]+[fr.Fraction(1)]
     sn = [int(i*lcm([i.denominator for i in I2])) for i in I2]
     return sn        
 def formatSubstance(string):
-    if re.findall(r"\[\d*[+-]\]",string):
-        I = re.findall(r"\[\d*[+-]\]",string)[0]
+    if re.findall("\[\d*[+-]\]",string):
+        I = re.findall("\[\d*[+-]\]",string)[0]
         if I[1] == "+":
             c = 1
         elif I[1] == "-":
@@ -105,36 +106,33 @@ def formatSubstance(string):
         else:
             c = int(I[-2]+I[-3:0:-1])
         string = string.replace(I,"E"+str(c))
-    if re.findall(r"\(", string):
-        L = re.findall(r"\(*[A-Za-z\-\d]*\)*[\-\d]*", string)
+    if re.findall("\(", string):
+        L = re.findall("\(*[A-Za-z\-\d]*\)*[\-\d]*", string)
         L = [removeBrackets(i) for i in L if i!=""]
         for i in L:i.expanse()
         string = "".join([str(i) for i in L])
     return string
 def balance(string):
-    string = string.replace("ï¼ˆ","(")
-    string = string.replace("ï¼‰",")")
-    #å°†ç”¨æˆ·è¾“å…¥çš„å­—ç¬¦ä¸²ä¸­çš„ä¸­æ–‡æ‹¬å·æ›¿æ¢ä¸ºè‹±æ–‡æ‹¬å·
+    string = string.replace("£¨","(")
+    string = string.replace("£©",")")
+    #½«ÓÃ»§ÊäÈëµÄ×Ö·û´®ÖĞµÄÖĞÎÄÀ¨ºÅÌæ»»ÎªÓ¢ÎÄÀ¨ºÅ
     try:
         equation = Equation(string)
-        #ç”¨ç”¨æˆ·è¾“å…¥çš„å­—ç¬¦ä¸²åˆ›å»ºä¸€ä¸ªEquationç±»çš„å®ä¾‹
+        #ÓÃÓÃ»§ÊäÈëµÄ×Ö·û´®´´½¨Ò»¸öEquationÀàµÄÊµÀı
     except IndexError:
-        return "é”™è¯¯ï¼šæœªçŸ¥é”™è¯¯ã€‚"
-        #TODO:ææ¸…æ¥šè¿™ä¸ªé”™è¯¯åˆ°åº•æ˜¯æ€ä¹ˆå›äº‹
+        return "´íÎó£ºÎ´Öª´íÎó¡£"
+        #TODO:¸ãÇå³şÕâ¸ö´íÎóµ½µ×ÊÇÔõÃ´»ØÊÂ
     except ValueError:
-        if "=" in string or "->" in string:
-            return "é”™è¯¯ï¼šè¯·ä¸è¦è¾“å…¥å¤šä½™çš„å­—ç¬¦ä¸²"
-        else:
-            return "é”™è¯¯ï¼šè¯·ç”¨ç­‰å·æˆ–ç®­å¤´è¿æ¥æ–¹ç¨‹å¼ã€‚"
+        return "´íÎó£ºÇëÓÃµÈºÅÁ¬½Ó·½³ÌÊ½¡£"
     if len(re.findall("=+",string))>1:
-        return "é”™è¯¯ï¼šè¯·ä¸è¦åœ¨æ–¹ç¨‹å¼ä¸­å‡ºç°å¤šäºä¸€ä¸ªç­‰å·ã€‚"
+        return "´íÎó£ºÇë²»ÒªÔÚ·½³ÌÊ½ÖĞ³öÏÖ¶àÓÚÒ»¸öµÈºÅ¡£"
     try:
         coafList = solve(equation.matrix,equation.vector)
         coafList = ["" if i==1 else i for i in coafList]
         if list(set([i==0 for i in coafList[:equation.reactantsAmount]]))[0]:
-            return "é”™è¯¯ï¼šè¯¥æ–¹ç¨‹å¼æ— è§£ã€‚"
+            return "´íÎó£º¸Ã·½³ÌÊ½ÎŞ½â¡£"
     except np.linalg.linalg.LinAlgError:
-        return "é”™è¯¯ï¼šè¯¥æ–¹ç¨‹å¼æ— è§£æˆ–æœ‰æ— ç©·å¤šç§é…å¹³æ–¹å¼ã€‚"
+        return "´íÎó£º¸Ã·½³ÌÊ½ÎŞ½â»òÓĞÎŞÇî¶àÖÖÅäÆ½·½Ê½¡£"
     balanced = ""
     for i in range(equation.reactantsAmount):
         balanced = balanced+str(coafList[i])+equation.substancesStringList[i]+(i==equation.reactantsAmount-1 and "=" or "+")
@@ -142,9 +140,7 @@ def balance(string):
         balanced = balanced+(i==equation.reactantsAmount and "=" or "+")+str(coafList[i])+equation.substancesStringList[i]
     return balanced
 
-def getExample():
-    EXAMPLES = ("H2+O2==H2O","Fe3O4+Al==Fe+Al2O3","Na+H2O==Na[+]+OH[-]+H2","CO2+Na2O2==Na2CO3+O2","Fe[3+]+Cu==Fe[2+]+Cu[2+]","Al+OH[-]+H2O==AlO2[-]+H2","Cu+HNO3==Cu(NO3)2+NO+H2O","SO2+Br2+H2O==H[+]+SO4[2-]+Br[-]","C6H12O6+O2==CO2+H2O","H[+]+Fe[2+]+MnO4[-]==Fe[3+]+Mn[2+]+H2O","NH4NO3+Ca(OH)2==Ca(NO3)2+NH3+H2O","KSCN+FeCl3==Fe(SCN)3+KCl","NO2+O2+H2O==HNO3","CH3COOH+ZnO==(CH3COO)2Zn+H2O")
-    return random.choice(EXAMPLES)
+EXAMPLES = ("H2+O2==H2O","Fe3O4+Al==Fe+Al2O3","Na+H2O==Na[+]+OH[-]+H2","CO2+Na2O2==Na2CO3+O2","Fe[3+]+Cu==Fe[2+]+Cu[2+]","Al+OH[-]+H2O==AlO2[-]+H2","Cu+HNO3==Cu(NO3)2+NO+H2O","SO2+Br2+H2O==H[+]+SO4[2-]+Br[-]","C6H12O6+O2==CO2+H2O","H[+]+Fe[2+]+MnO4[-]==Fe[3+]+Mn[2+]+H2O","NH4NO3+Ca(OH)2==Ca(NO3)2+NH3+H2O","KSCN+FeCl3==Fe(SCN)3+KCl","NO2+O2+H2O==HNO3","CH3COOH+ZnO==(CH3COO)2Zn+H2O")
 
 if __name__ == "__main__":
     print(balance("CH3COOH + ZnO = (CH3COO)2Zn + H2O"))
